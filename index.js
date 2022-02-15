@@ -12,8 +12,10 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
+const routerLogin = require('./routerLogin');
 const routerTalker = require('./routerTalker');
 
+app.use('/login', routerLogin);
 app.use('/talker', routerTalker);
 
 app.listen(PORT, () => {
