@@ -59,11 +59,15 @@ router.put('/:id', autorizar, autName, autAge, autTalk, autwatchedAt, autRate, (
   const { id } = req.params;
   const { name, age, talk } = req.body;
 
-  const findPalestrantes = palestrantes.find((p) => p.id === Number(id));
+  const findPalestrantes = palestrantes.findIndex((p) => p.id === Number(id));
   
-  fs.writeFileSync('talker.json', JSON.stringify(
-    [...palestrantes, palestrantes[id] = { ...findPalestrantes, name, age, talk }],
-  ));
+  /* em palestrantes[findPalestrantes] eu pego obj dentro do array palestrantes,
+  na posição indicada pelo findPalestrantes, essa é a posição, nao o index
+  
+  Dentro dele com o spread eu mantenho td q existe, modificando apenas name, age, talk */
+  palestrantes[findPalestrantes] = { ...palestrantes[findPalestrantes], name, age, talk };
+
+  fs.writeFileSync('talker.json', JSON.stringify(palestrantes)); // escrevo o array já modificado
 
   return resp.status(200).json({ id: Number(id), name, age, talk });
 });
