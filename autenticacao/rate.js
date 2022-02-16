@@ -1,7 +1,7 @@
 const autenticacaoRate = (req, resp, next) => {
   const { talk: { rate } } = req.body;
 
-  if (!rate) {
+  if (rate === undefined) {
     return resp.status(400)
     .json({ message: 'O campo "talk" é obrigatório e "watchedAt" e "rate" não podem ser vazios' });
   }

@@ -6,18 +6,19 @@ const autTalk = require('./autenticacao/talk');
 const autwatchedAt = require('./autenticacao/watchedAt');
 const autRate = require('./autenticacao/rate');
 const autorizar = require('./autenticacao/authorization');
+const getArquivoTalker = require('./getArquivoTalker');
 
 const router = express.Router();
 
 router.get('/', (req, resp) => {
-  const palestrantes = fs.readFileSync('talker.json', 'utf-8');
+  const palestrantes = getArquivoTalker();
   if (!palestrantes) return resp.status(200).json([], 'utf-8');
   
-  return resp.status(200).send(JSON.parse(palestrantes));
+  return resp.status(200).send(palestrantes);
 });
 
 router.get('/:id', (req, resp) => {
-  const palestrantes = JSON.parse(fs.readFileSync('talker.json', 'utf-8'));
+  const palestrantes = getArquivoTalker();
   const { id } = req.params;
 
   const findPalestrantes = palestrantes.find((p) => p.id === Number(id));
@@ -30,7 +31,7 @@ router.get('/:id', (req, resp) => {
 });
 
 router.post('/', autorizar, autName, autAge, autTalk, autwatchedAt, autRate, (req, resp) => {
-  const palestrantes = JSON.parse(fs.readFileSync('talker.json', 'utf-8'));
+  const palestrantes = getArquivoTalker();
   const { name, age, talk } = req.body;
 
   fs.writeFileSync('talker.json',
@@ -40,5 +41,19 @@ router.post('/', autorizar, autName, autAge, autTalk, autwatchedAt, autRate, (re
   return resp.status(201).json({
     id: palestrantes[palestrantes.length - 1].id + 1, name, age, talk, 
   });
+});
+
+router.put('/:id', autorizar, autName, autAge, autTalk, autwatchedAt, autRate, (req, resp) => {
+  const palestrantes = getArquivoTalker();
+  const { id } = req.params;
+  const { name, age, talk } = req.body;
+
+  const findPalestrantes = palestrantes.find((p) => p.id === Number(id));
+  
+  fs.writeFileSync('talker.json', JSON.stringify(
+    [...palestrantes, palestrantes[id] = { ...findPalestrantes, name, age, talk }],
+  ));
+
+  return resp.status(200).json({ id: Number(id), name, age, talk });
 });
 module.exports = router;
