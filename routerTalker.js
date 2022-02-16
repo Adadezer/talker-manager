@@ -25,7 +25,7 @@ router.get('/search/', autorizar, (req, resp) => {
 
   if (!name) return resp.status(200).json(palestrantes);
   
-  return resp.status(204).json(searchPalestrante);
+  return resp.status(200).json(searchPalestrante);
 });
 
 router.get('/:id', (req, resp) => {
