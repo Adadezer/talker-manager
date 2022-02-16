@@ -17,6 +17,17 @@ router.get('/', (req, resp) => {
   return resp.status(200).send(palestrantes);
 });
 
+router.get('/search/', autorizar, (req, resp) => {
+  const palestrantes = getArquivoTalker();
+  const { name } = req.query;
+  
+  const searchPalestrante = palestrantes.filter((p) => p.name.includes(name));
+
+  if (!name) return resp.status(200).json(palestrantes);
+  
+  return resp.status(204).json(searchPalestrante);
+});
+
 router.get('/:id', (req, resp) => {
   const palestrantes = getArquivoTalker();
   const { id } = req.params;
@@ -68,4 +79,5 @@ router.delete('/:id', autorizar, (req, resp) => {
   
   resp.status(204).end();
 });
+
 module.exports = router;
