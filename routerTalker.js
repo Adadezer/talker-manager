@@ -1,5 +1,11 @@
 const express = require('express');
 const fs = require('fs');
+const autName = require('./autenticacao/name');
+const autAge = require('./autenticacao/age');
+const autTalk = require('./autenticacao/talk');
+const autwatchedAt = require('./autenticacao/watchedAt');
+const autRate = require('./autenticacao/rate');
+const autorizar = require('./autenticacao/authorization');
 
 const router = express.Router();
 
@@ -21,5 +27,18 @@ router.get('/:id', (req, resp) => {
   }
 
   return resp.status(200).json(findPalestrantes);
+});
+
+router.post('/', autorizar, autName, autAge, autTalk, autwatchedAt, autRate, (req, resp) => {
+  const palestrantes = JSON.parse(fs.readFileSync('talker.json', 'utf-8'));
+  const { name, age, talk } = req.body;
+
+  fs.writeFileSync('talker.json',
+    JSON.stringify([...palestrantes,
+      { id: palestrantes[palestrantes.length - 1].id + 1, name, age, talk }]));
+
+  return resp.status(201).json({
+    id: palestrantes[palestrantes.length - 1].id + 1, name, age, talk, 
+  });
 });
 module.exports = router;
