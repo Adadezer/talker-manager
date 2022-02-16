@@ -56,4 +56,16 @@ router.put('/:id', autorizar, autName, autAge, autTalk, autwatchedAt, autRate, (
 
   return resp.status(200).json({ id: Number(id), name, age, talk });
 });
+
+router.delete('/:id', autorizar, (req, resp) => {
+  const palestrantes = getArquivoTalker();
+  const { id } = req.params;
+  const findPalestrantes = palestrantes.find((p) => p.id === Number(id));
+
+  fs.writeFileSync('talker.json', JSON.stringify(
+    palestrantes.splice(findPalestrantes, 1),
+  ));
+  
+  resp.status(204).end();
+});
 module.exports = router;
